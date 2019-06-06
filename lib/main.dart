@@ -9,7 +9,11 @@ const request =
 
 void main() async {
   print(await getData());
-  runApp(MaterialApp(home: Home()));
+  runApp(MaterialApp(home: Home(),
+  theme: ThemeData(
+    hintColor: Colors.amber,
+    primaryColor: Colors.white
+  ),));
 }
 
 Future<Map> getData() async {
@@ -23,6 +27,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  double dolar;
+  double euro;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,22 +50,50 @@ class _HomeState extends State<Home> {
                     "Carregando dados...",
                     style: TextStyle(color: Colors.amber, fontSize: 25),
                     textAlign: TextAlign.center,
-                  )
-                  );
+                  ));
                 default:
-                  if(snapshot.hasError){
+                  if (snapshot.hasError) {
                     return Center(
                         child: Text(
-                          "Erro ao Carregar Dados...",
-                          style: TextStyle(color: Colors.amber, fontSize: 25),
-                          textAlign: TextAlign.center,
-                        )
-                    );
+                      "Erro ao Carregar Dados...",
+                      style: TextStyle(color: Colors.amber, fontSize: 25),
+                      textAlign: TextAlign.center,
+                    ));
                   } else {
-                    return Container(color: Colors.lightGreenAccent);
+                    dolar =
+                        snapshot.data["results"]["currencies"]["USD"]["buy"];
+                    euro = snapshot.data["results"]["currencies"]["EUR"]["buy"];
+
+                    return SingleChildScrollView(
+                      padding: EdgeInsets.all(10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Icon(Icons.monetization_on,
+                              size: 150, color: Colors.amber),
+                          buildTextField("Reais", "R\$"),
+                          Divider(),
+                          buildTextField("Dólares", "US\$"),
+                          Divider(),
+                          buildTextField("Euros", "€")
+                        ],
+                      ),
+                    );
                   }
               }
             })
     );
   }
+}
+
+Widget buildTextField(String label, String prefix){
+  return TextField(
+    decoration: InputDecoration(labelText: label,
+        labelStyle: TextStyle(
+            color: Colors.amber),
+        border: OutlineInputBorder(),
+        prefixText: prefix
+    ),
+    style: TextStyle(color: Colors.amber, fontSize: 25),
+  );
 }
